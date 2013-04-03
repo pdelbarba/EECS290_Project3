@@ -16,20 +16,25 @@ public class MasterScript : MonoBehaviour {
 			for (var j = 10; j<40; j++) {
 				var rand = Random.value;
 				if (rand<0.05) {
-					GameObject tree = (GameObject)Object.Instantiate(Resources.Load("Tree",typeof(GameObject)), tileLocation(i,j), Quaternion.identity);
+					GameObject tree = (GameObject)Object.Instantiate(Resources.Load("BigTree",typeof(GameObject)), tileLocation(i,j), Quaternion.AngleAxis(90, Vector3.right));
 					tiles[i,j]=tree;
 				}
 			}
 		}
 		for (var i = 20; i<30; i++) {
 			for (var j = 5; j<10; j++) {
-				GameObject tank = (GameObject)Object.Instantiate (Resources.Load ("Tank1",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
+				GameObject tank = (GameObject)Object.Instantiate (Resources.Load ("Tank",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
+				tank.transform.localScale = new Vector3(3.0f, 3.0f, 3.0f);
+				tank.transform.Rotate(Vector3.up * 180);
+				tank.transform.Rotate(Vector3.left * 90);
 				tiles[i,j]=tank;
 			}
 		}
 		for (var i = 20; i<30; i++) {
 			for (var j = 40; j<45; j++) {
-				GameObject tank = (GameObject)Object.Instantiate (Resources.Load ("Tank2",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
+				GameObject tank = (GameObject)Object.Instantiate (Resources.Load ("Tank",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
+				tank.transform.localScale = new Vector3(3.0f, 3.0f, 3.0f);
+				tank.transform.Rotate(Vector3.left * -90);
 				tiles[i,j]=tank;
 			}
 		}
