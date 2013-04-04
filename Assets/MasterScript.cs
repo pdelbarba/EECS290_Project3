@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 public class MasterScript : MonoBehaviour {
-	
+	static bool greensTurn = true;
 	public static GameObject[,] tiles;
 	static GameObject selected;
 	static int[] selected_ij;
@@ -41,12 +41,12 @@ public class MasterScript : MonoBehaviour {
 				ts.teamSquare = teamSquare;
 				
 				healthG = (GameObject)Object.Instantiate(Resources.Load ("HealthBarG",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
-				healthG.transform.localScale = new Vector3(ts.health, 1, 1);
+				healthG.transform.localScale = new Vector3(ts.health, 2, 1);
 				healthG.transform.position = new Vector3(healthG.transform.position.x, healthG.transform.position.y, 10.1f);
 				ts.healthG = healthG;
 			
 				healthR = (GameObject)Object.Instantiate(Resources.Load ("HealthBarR",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
-				healthR.transform.localScale = new Vector3(10, 1, 1);
+				healthR.transform.localScale = new Vector3(10, 2, 1);
 				ts.healthR = healthR;
 				healthR.transform.position = new Vector3(healthG.transform.position.x, healthR.transform.position.y, 10);
 				
@@ -66,12 +66,12 @@ public class MasterScript : MonoBehaviour {
 				ts.teamSquare = teamSquare;
 				
 				healthG = (GameObject)Object.Instantiate(Resources.Load ("HealthBarG",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
-				healthG.transform.localScale = new Vector3(ts.health, 1, 1);
+				healthG.transform.localScale = new Vector3(ts.health, 2, 1);
 				healthG.transform.position = new Vector3(healthG.transform.position.x, healthG.transform.position.y, 10.1f);
 				ts.healthG = healthG;
 			
 				healthR = (GameObject)Object.Instantiate(Resources.Load ("HealthBarR",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
-				healthR.transform.localScale = new Vector3(10, 1, 1);
+				healthR.transform.localScale = new Vector3(10, 2, 1);
 				healthR.transform.position = new Vector3(healthG.transform.position.x, healthR.transform.position.y, 10);
 				ts.healthR = healthR;
 				
@@ -132,10 +132,18 @@ public class MasterScript : MonoBehaviour {
 			rangeSquare = (GameObject)Object.Instantiate(Resources.Load ("RangeSquare",typeof(GameObject)), 
 				tileLocation (selected_ij[0],selected_ij[1]), Quaternion.identity);
 			rangeSquare.transform.localScale = new Vector3(ts.gunRange*20, ts.gunRange*20,1);
+			
 		}
 		if (Input.GetMouseButtonDown(1)) {
 			var ij = getIJ(Input.mousePosition);
-			if (selected != null) {
+			Debug.Log(ij[0] + " " + ij[1] + " : " + tiles[ij[0], ij[1]] + " : " + selected_ij[0] + " ; " + selected_ij[1]);
+			if (selected != null &&
+				tiles[ij[0], ij[1]] == null &&
+				selected_ij[0] + 5 >= ij[0] &&
+				selected_ij[0] - 5 <= ij[0] &&
+				selected_ij[1] + 5 >= ij[1] &&
+				selected_ij[1] - 5 <= ij[1]) {
+				
 				tiles[selected_ij[0],selected_ij[1]]=null;
 				TankScript ts = (TankScript)selected.GetComponent(typeof(TankScript));
 				ts.MoveTank (ij[0],ij[1]);
@@ -144,7 +152,23 @@ public class MasterScript : MonoBehaviour {
 				selected_ij = null;
 				Destroy (selectSquare);
 				Destroy (rangeSquare);
-			}	
+			} else if(selected != null &&
+				tiles[ij[0], ij[1]] != null &&
+				selected_ij[0] + 8 >= ij[0] &&
+				selected_ij[0] - 8 <= ij[0] &&
+				selected_ij[1] + 8 >= ij[1] &&
+				selected_ij[1] - 8 <= ij[1]) {
+				
+				Debug.Log ("Boom" + tileLocation(ij[0], ij[1]));
+				Transform Explosion = Instantiate(Resources.Load ("Detonator-Insanity",typeof(GameObject)), tileLocation(ij[0], ij[1]), Quaternion.AngleAxis(270, Vector3.up)) as Transform;
+				TankScript ts = (TankScript)tiles[ij[0],ij[1]].GetComponent(typeof(TankScript));
+				ts.hit();
+				if(ts.health == 0) {
+					Destroy(tiles[ij[0],ij[1]]);
+					ts.destroy();
+					tiles[ij[0],ij[1]]=null;
+				}
+			}
 		}
 	}
 }
