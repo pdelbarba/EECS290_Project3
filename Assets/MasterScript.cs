@@ -7,8 +7,11 @@ public class MasterScript : MonoBehaviour {
 	static GameObject selected;
 	static int[] selected_ij;
 	static GameObject selectSquare;
+	static GameObject rangeSquare;
 	public const int GREENTEAM = 1;
 	public const int REDTEAM = 2;
+	static GameObject healthR;
+	static GameObject healthG;
 	
 	// Use this for initialization
 	void Start () {
@@ -30,11 +33,23 @@ public class MasterScript : MonoBehaviour {
 				tank.transform.localScale = new Vector3(3.0f, 3.0f, 3.0f);
 				tank.transform.Rotate(Vector3.up * 180);
 				tank.transform.Rotate(Vector3.left * 90);
+				
 				GameObject teamSquare = (GameObject)Object.Instantiate(Resources.Load ("Tank1",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
 				teamSquare.transform.localScale = new Vector3(15, 15, 1);
 				var ts = (TankScript)tank.GetComponent (typeof(TankScript));
 				ts.teamId = GREENTEAM;
 				ts.teamSquare = teamSquare;
+				
+				healthG = (GameObject)Object.Instantiate(Resources.Load ("HealthBarG",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
+				healthG.transform.localScale = new Vector3(ts.health, 1, 1);
+				healthG.transform.position = new Vector3(healthG.transform.position.x, healthG.transform.position.y, 10.1f);
+				ts.healthG = healthG;
+			
+				healthR = (GameObject)Object.Instantiate(Resources.Load ("HealthBarR",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
+				healthR.transform.localScale = new Vector3(10, 1, 1);
+				ts.healthR = healthR;
+				healthR.transform.position = new Vector3(healthG.transform.position.x, healthR.transform.position.y, 10);
+				
 				tiles[i,j]=tank;
 			}
 		}
@@ -43,11 +58,23 @@ public class MasterScript : MonoBehaviour {
 				GameObject tank = (GameObject)Object.Instantiate (Resources.Load ("Tank",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
 				tank.transform.localScale = new Vector3(3.0f, 3.0f, 3.0f);
 				tank.transform.Rotate(Vector3.left * -90);
+				
 				GameObject teamSquare = (GameObject)Object.Instantiate(Resources.Load ("Tank2",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
 				teamSquare.transform.localScale = new Vector3(15, 15, 1);
 				var ts = (TankScript)tank.GetComponent (typeof(TankScript));
 				ts.teamId = REDTEAM;
 				ts.teamSquare = teamSquare;
+				
+				healthG = (GameObject)Object.Instantiate(Resources.Load ("HealthBarG",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
+				healthG.transform.localScale = new Vector3(ts.health, 1, 1);
+				healthG.transform.position = new Vector3(healthG.transform.position.x, healthG.transform.position.y, 10.1f);
+				ts.healthG = healthG;
+			
+				healthR = (GameObject)Object.Instantiate(Resources.Load ("HealthBarR",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
+				healthR.transform.localScale = new Vector3(10, 1, 1);
+				healthR.transform.position = new Vector3(healthG.transform.position.x, healthR.transform.position.y, 10);
+				ts.healthR = healthR;
+				
 				tiles[i,j]=tank;
 			}
 		}
@@ -91,14 +118,20 @@ public class MasterScript : MonoBehaviour {
 		if (Input.GetMouseButtonDown(0)) {
 			if (selected != null) {
 				Destroy (selectSquare);
+				Destroy (rangeSquare);
 			}
 			var tank = getTile(Input.mousePosition); // Should retrieve information from array
 			selected = tank;
 			selected_ij = getIJ (Input.mousePosition);
 			TankScript ts = (TankScript)selected.GetComponent(typeof(TankScript));
+			
 			selectSquare = (GameObject)Object.Instantiate(Resources.Load ("SelectSquare",typeof(GameObject)), 
 				tileLocation (selected_ij[0],selected_ij[1]), Quaternion.identity);
 			selectSquare.transform.localScale = new Vector3(ts.range*20, ts.range*20,1);
+			
+			rangeSquare = (GameObject)Object.Instantiate(Resources.Load ("RangeSquare",typeof(GameObject)), 
+				tileLocation (selected_ij[0],selected_ij[1]), Quaternion.identity);
+			rangeSquare.transform.localScale = new Vector3(ts.gunRange*20, ts.gunRange*20,1);
 		}
 		if (Input.GetMouseButtonDown(1)) {
 			var ij = getIJ(Input.mousePosition);
@@ -110,6 +143,7 @@ public class MasterScript : MonoBehaviour {
 				selected = null;
 				selected_ij = null;
 				Destroy (selectSquare);
+				Destroy (rangeSquare);
 			}	
 		}
 	}
