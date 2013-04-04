@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 
 public class MasterScript : MonoBehaviour {
-	static bool greensTurn = true;
 	public static GameObject[,] tiles;
 	static GameObject selected;
 	static int[] selected_ij;
@@ -12,9 +11,13 @@ public class MasterScript : MonoBehaviour {
 	public const int REDTEAM = 2;
 	static GameObject healthR;
 	static GameObject healthG;
+	static int turn;
+	static int turncount;
 	
 	// Use this for initialization
 	void Start () {
+		turn = GREENTEAM;
+		turncount = 5;
 		selected = null;
 		tiles = new GameObject[50,50];
 		//Dont spawn any random objects in the first 10 rows on each side
@@ -103,6 +106,14 @@ public class MasterScript : MonoBehaviour {
 		return new Vector3((i*20-500)+10,(j*20-500)+10,1);
 	}
 	
+	public static void endTurn() {
+		turncount -= 1;
+		if (turncount <= 0) {
+			turn = turn==GREENTEAM ? REDTEAM : GREENTEAM;
+			turncount = 5;
+		}
+	}
+	
 	void Update () {
 		if (Input.GetKey (KeyCode.DownArrow)) {
 			Camera.main.transform.Translate(new Vector3(0,-10,0));
@@ -121,18 +132,21 @@ public class MasterScript : MonoBehaviour {
 				Destroy (rangeSquare);
 			}
 			var tank = getTile(Input.mousePosition); // Should retrieve information from array
-			selected = tank;
-			selected_ij = getIJ (Input.mousePosition);
-			TankScript ts = (TankScript)selected.GetComponent(typeof(TankScript));
-			
-			selectSquare = (GameObject)Object.Instantiate(Resources.Load ("SelectSquare",typeof(GameObject)), 
-				tileLocation (selected_ij[0],selected_ij[1]), Quaternion.identity);
-			selectSquare.transform.localScale = new Vector3(ts.range*20, ts.range*20,1);
-			
-			rangeSquare = (GameObject)Object.Instantiate(Resources.Load ("RangeSquare",typeof(GameObject)), 
-				tileLocation (selected_ij[0],selected_ij[1]), Quaternion.identity);
-			rangeSquare.transform.localScale = new Vector3(ts.gunRange*20, ts.gunRange*20,1);
-			
+			if (tank != null) {
+				TankScript ts = (TankScript)tank.GetComponent(typeof(TankScript));
+				if (ts != null && ts.teamId == turn) {
+					selected = tank;
+					selected_ij = getIJ (Input.mousePosition);
+					
+					selectSquare = (GameObject)Object.Instantiate(Resources.Load ("SelectSquare",typeof(GameObject)), 
+						tileLocation (selected_ij[0],selected_ij[1]), Quaternion.identity);
+					selectSquare.transform.localScale = new Vector3(ts.range*20, ts.range*20,1);
+					
+					rangeSquare = (GameObject)Object.Instantiate(Resources.Load ("RangeSquare",typeof(GameObject)), 
+						tileLocation (selected_ij[0],selected_ij[1]), Quaternion.identity);
+					rangeSquare.transform.localScale = new Vector3(ts.gunRange*20, ts.gunRange*20,1);
+				}
+			}	
 		}
 		if (Input.GetMouseButtonDown(1)) {
 			var ij = getIJ(Input.mousePosition);
@@ -152,6 +166,7 @@ public class MasterScript : MonoBehaviour {
 				selected_ij = null;
 				Destroy (selectSquare);
 				Destroy (rangeSquare);
+				endTurn ();
 			} else if(selected != null &&
 				tiles[ij[0], ij[1]] != null &&
 				selected_ij[0] + 8 >= ij[0] &&
@@ -168,6 +183,10 @@ public class MasterScript : MonoBehaviour {
 					ts.destroy();
 					tiles[ij[0],ij[1]]=null;
 				}
+				selected_ij = null;
+				Destroy (selectSquare);
+				Destroy (rangeSquare);
+				endTurn ();
 			}
 		}
 	}
