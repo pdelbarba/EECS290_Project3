@@ -44,7 +44,7 @@ public class MasterScript : MonoBehaviour {
 				ts.teamSquare = teamSquare;
 				
 				healthG = (GameObject)Object.Instantiate(Resources.Load ("HealthBarG",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
-				healthG.transform.localScale = new Vector3(ts.health, 2, 1);
+				healthG.transform.localScale = new Vector3(ts.health, 2, 2);
 				healthG.transform.position = new Vector3(healthG.transform.position.x, healthG.transform.position.y, 10.1f);
 				ts.healthG = healthG;
 			
@@ -69,7 +69,7 @@ public class MasterScript : MonoBehaviour {
 				ts.teamSquare = teamSquare;
 				
 				healthG = (GameObject)Object.Instantiate(Resources.Load ("HealthBarG",typeof(GameObject)), tileLocation (i,j), Quaternion.identity);
-				healthG.transform.localScale = new Vector3(ts.health, 2, 1);
+				healthG.transform.localScale = new Vector3(ts.health, 2, 2);
 				healthG.transform.position = new Vector3(healthG.transform.position.x, healthG.transform.position.y, 10.1f);
 				ts.healthG = healthG;
 			
@@ -148,7 +148,7 @@ public class MasterScript : MonoBehaviour {
 				}
 			}	
 		}
-		if (Input.GetMouseButtonDown(1)) {
+		if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown (2)) {
 			var ij = getIJ(Input.mousePosition);
 			Debug.Log(ij[0] + " " + ij[1] + " : " + tiles[ij[0], ij[1]] + " : " + selected_ij[0] + " ; " + selected_ij[1]);
 			if (selected != null &&
